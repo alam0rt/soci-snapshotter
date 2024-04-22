@@ -85,7 +85,7 @@ type Zinfo interface {
 func NewZinfo(compressionAlgo string, zinfoBytes []byte) (Zinfo, error) {
 	switch compressionAlgo {
 	case Gzip:
-		return newGzipZinfo(zinfoBytes)
+		return newGzipZinfoGo(zinfoBytes)
 	case Zstd:
 		return nil, fmt.Errorf("not implemented: %s", Zstd)
 	case Uncompressed, Unknown:
@@ -101,7 +101,7 @@ func NewZinfo(compressionAlgo string, zinfoBytes []byte) (Zinfo, error) {
 func NewZinfoFromFile(compressionAlgo string, filename string, spanSize int64) (Zinfo, error) {
 	switch compressionAlgo {
 	case Gzip:
-		return newGzipZinfoFromFile(filename, spanSize)
+		return newGzipZinfoFromFileGo(filename, spanSize)
 	case Zstd:
 		return nil, fmt.Errorf("not implemented: %s", Zstd)
 	case Uncompressed:

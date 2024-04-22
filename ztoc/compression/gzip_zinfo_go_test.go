@@ -20,7 +20,7 @@ import (
 	"testing"
 )
 
-func TestNewGzipZinfo(t *testing.T) {
+func TestNewGzipZinfoGo(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		name        string
@@ -71,7 +71,7 @@ func TestNewGzipZinfo(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			_, err := newGzipZinfo(tc.zinfoBytes)
+			_, err := newGzipZinfoGo(tc.zinfoBytes)
 			if tc.expectError != (err != nil) {
 				t.Fatalf("expect error: %t, actual error: %v", tc.expectError, err)
 			}
@@ -79,11 +79,11 @@ func TestNewGzipZinfo(t *testing.T) {
 	}
 }
 
-func TestExtractDataFromBuffer(t *testing.T) {
+func TestExtractDataFromBufferGo(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		name               string
-		gzipZinfo          GzipZinfo
+		gzipZinfo          GzipZinfoGo
 		compressedBuf      []byte
 		uncompressedSize   Offset
 		uncompressedOffset Offset
@@ -92,28 +92,37 @@ func TestExtractDataFromBuffer(t *testing.T) {
 	}{
 		{
 			name:          "nil buffer should return error",
-			gzipZinfo:     GzipZinfo{},
+			gzipZinfo:     GzipZinfoGo{},
 			compressedBuf: nil,
 			expectError:   true,
 		},
 		{
 			name:          "empty buffer should return error",
-			gzipZinfo:     GzipZinfo{},
+			gzipZinfo:     GzipZinfoGo{},
 			compressedBuf: []byte{},
 			expectError:   true,
 		},
 		{
 			name:             "negative uncompressedSize should return error",
-			gzipZinfo:        GzipZinfo{},
+			gzipZinfo:        GzipZinfoGo{},
 			compressedBuf:    []byte("foobar"),
 			uncompressedSize: -1,
 			expectError:      true,
 		},
 		{
 			name:             "zero uncompressedSize should return empty byte slice",
-			gzipZinfo:        GzipZinfo{},
+			gzipZinfo:        GzipZinfoGo{},
 			compressedBuf:    []byte("foobar"),
 			uncompressedSize: 0,
+			expectError:      false,
+		},
+		{
+			name:      "this should do decompress `hello`",
+			gzipZinfo: GzipZinfoGo{},
+			compressedBuf: []byte{0x1f, 0x8b, 0x08, 0x00, 0x41, 0xc3, 0x25, 0x66, 0x00, 0x03, 0xcb, 0x48,
+				0xcd, 0xc9, 0xc9, 0x07, 0x00, 0x86, 0xa6, 0x10, 0x36, 0x05, 0x00, 0x00,
+				0x00},
+			uncompressedSize: 5,
 			expectError:      false,
 		},
 	}
@@ -131,11 +140,11 @@ func TestExtractDataFromBuffer(t *testing.T) {
 	}
 }
 
-func TestExtractDataFromFile(t *testing.T) {
+func TestExtractDataFromFileGo(t *testing.T) {
 	t.Parallel()
 	testCases := []struct {
 		name               string
-		gzipZinfo          GzipZinfo
+		gzipZinfo          GzipZinfoGo
 		filename           string
 		uncompressedSize   Offset
 		uncompressedOffset Offset
@@ -143,14 +152,14 @@ func TestExtractDataFromFile(t *testing.T) {
 	}{
 		{
 			name:             "negative uncompressedSize should return error",
-			gzipZinfo:        GzipZinfo{},
+			gzipZinfo:        GzipZinfoGo{},
 			filename:         "",
 			uncompressedSize: -1,
 			expectError:      true,
 		},
 		{
 			name:             "zero uncompressedSize should return empty byte slice",
-			gzipZinfo:        GzipZinfo{},
+			gzipZinfo:        GzipZinfoGo{},
 			filename:         "",
 			uncompressedSize: 0,
 			expectError:      false,
