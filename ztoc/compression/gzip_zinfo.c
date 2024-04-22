@@ -42,7 +42,7 @@
 
 #include "gzip_zinfo.h"
 
-#include <endian.h>
+#include <machine/endian.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
